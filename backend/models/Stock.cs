@@ -18,6 +18,7 @@ namespace backend.models
         public decimal LastDividend { get; set; }
         public string Industry { get; set; } = string.Empty;
         public long MarketCap { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public List<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
