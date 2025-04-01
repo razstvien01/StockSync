@@ -36,7 +36,10 @@ namespace backend.controllers
             {
                 return NotFound();
             }
-            return Ok(stock);
+            
+            var stockDto = stock.ToStockDto();
+            
+            return Ok(stockDto);
         }
     }
 }
