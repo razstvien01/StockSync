@@ -48,19 +48,39 @@ namespace backend.controllers
         public async Task<IActionResult> CreateStock([FromBody] CreateStockRequestDto request)
         {
             var stockDto = request.ToStockFromCreateDto();
-            
+
             //* Check if that stock already exists
             var existingStock = await _context.Stocks.FirstOrDefaultAsync(s => s.Symbol == stockDto.Symbol);
             if (existingStock != null)
             {
                 return Conflict(new { message = "Stock already exists" });
             }
-            
+
             _context.Add(stockDto);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetStockById), new { id = stockDto.Id }, stockDto.ToStockDto());
 
+        }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateStock(int id, [FromBody] UpdateStockRequestDto request)
+        {
+            var stock = await _context.Stocks.FindAsync(id);
+            if (stock == null)
+            {
+                return NotFound();
+            }
+            stock.Symbol = request.Symbol;
+            stock.CompanyName = request.CompanyName;
+            stock.Purchase = request.Purchase;
+            stock.LastDividend = request.LastDividend;
+            stock.Industry = request.Industry;
+            stock.MarketCap = request.MarketCap;
+            stock.CreatedAt = request.CreatedAt;
+
+            _context.SaveChanges();
+
+            return Ok(stock.ToStockDto());
         }
     }
 }
