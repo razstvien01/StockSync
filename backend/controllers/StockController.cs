@@ -47,10 +47,15 @@ namespace backend.controllers
         [HttpPost]
         public async Task<IActionResult> CreateStock([FromBody] CreateStockRequestDto request)
         {
-            var stockDto = request.ToStockFromCreateDto()
+            var stockDto = request.ToStockFromCreateDto();
             
             //* Check if that stock already exists
-
+            var existingStock = await _context.Stocks.FirstOrDefaultAsync(s => s.Symbol == stockDto.Symbol);
+            if (existingStock != null)
+            {
+                return Conflict(new { message = "Stock already exists" });
+            }
+            
             _context.Add(stockDto);
             await _context.SaveChangesAsync();
 
