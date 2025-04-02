@@ -9,18 +9,30 @@ namespace backend.mappers
 {
     public static class StockMapper
     {
-        public static StockDto ToStockDto(this Stock stockModel)
+        public static StockDto ToStockDto(this Stock dto)
         {
             return new StockDto
             {
-                Id = stockModel.Id,
-                Symbol = stockModel.Symbol,
-                CompanyName = stockModel.CompanyName,
-                Purchase = stockModel.Purchase,
-                LastDividend = stockModel.LastDividend,
-                Industry = stockModel.Industry,
-                MarketCap = stockModel.MarketCap,
-                CreatedAt = stockModel.CreatedAt
+                Id = dto.Id,
+                Symbol = dto.Symbol,
+                CompanyName = dto.CompanyName,
+                Purchase = dto.Purchase,
+                LastDividend = dto.LastDividend,
+                Industry = dto.Industry,
+                MarketCap = dto.MarketCap,
+                CreatedAt = dto.CreatedAt
+            };
+        }
+        
+        public static Stock ToStockFromCreateDto(this CreateStockRequestDto dto){
+            return new Stock{
+                Symbol = dto.Symbol,
+                CompanyName = dto.CompanyName,
+                Purchase = dto.Purchase,
+                LastDividend = dto.LastDividend,
+                Industry = dto.Industry,
+                MarketCap = dto.MarketCap,
+                CreatedAt = dto.CreatedAt
             };
         }
     }

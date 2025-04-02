@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using backend.data;
+using backend.dtos.Stock;
 using backend.mappers;
+using backend.models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,10 +38,24 @@ namespace backend.controllers
             {
                 return NotFound();
             }
-            
+
             var stockDto = stock.ToStockDto();
-            
+
             return Ok(stockDto);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateStock([FromBody] CreateStockRequestDto request)
+        {
+            var stockDto = request.ToStockFromCreateDto()
+            
+            //* Check if that stock already exists
+
+            _context.Add(stockDto);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetStockById), new { id = stockDto.Id }, stockDto.ToStockDto());
+
         }
     }
 }
