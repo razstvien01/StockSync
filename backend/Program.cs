@@ -1,4 +1,6 @@
 using backend.data;
+using backend.interfaces;
+using backend.repositories;
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +24,8 @@ builder.Services.AddDbContext<AppDBContext>(options =>
     options.UseNpgsql(connectionSring);
 });
 builder.Services.AddControllers();
+// * In order to DI works
+builder.Services.AddScoped<IStockRepository, StockRepository>();
 
 var app = builder.Build();
 
