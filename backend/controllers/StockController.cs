@@ -82,5 +82,22 @@ namespace backend.controllers
 
             return Ok(stock.ToStockDto());
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteStock([FromRoute] int id)
+        {
+            var stock = await _context.Stocks.Include(s => s.Comments).FirstOrDefaultAsync(s => s.Id == id);
+            if (stock == null)
+            {
+                return NotFound();
+            }
+
+            _context.Comments.RemoveRange(stock.Comments);
+
+            _context.Stocks.Remove(stock);
+            await _context.SaveChangesAsync();
+
+            return Accepted(new { message = "Stock deleted successfully", Id = id });
+        }
     }
 }
