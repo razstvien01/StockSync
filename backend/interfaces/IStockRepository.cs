@@ -9,5 +9,9 @@ namespace backend.interfaces
     public interface IStockRepository
     {
         Task<List<Stock>> GetAllStocksAsync();
+        Task<Stock> FindStockAsync(int id);
+        Task<Stock> CreateStockAsync(Stock stock);
+        Task<Stock> UpdateStockAsync(int id);
+        Task<Stock> DeleteStockAsync(int id);        
     }
 }
