@@ -16,11 +16,9 @@ namespace backend.controllers
     [ApiController]
     public class StockController : ControllerBase
     {
-        private readonly AppDBContext _context;
         private readonly IStockRepository _stockRepository;
         public StockController(AppDBContext context, IStockRepository stockRepository)
         {
-            _context = context;
             _stockRepository = stockRepository;
         }
 
@@ -36,7 +34,7 @@ namespace backend.controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetStockById([FromRoute] int id)
         {
-            var stock = await _context.Stocks.FindAsync(id);
+            var stock = await _stockRepository.FindStockAsync(id);
             if (stock == null)
             {
                 return NotFound();
@@ -51,16 +49,12 @@ namespace backend.controllers
         public async Task<IActionResult> CreateStock([FromBody] CreateStockRequestDto request)
         {
             var stockDto = request.ToStockFromCreateDto();
+            var existingStock = await _stockRepository.CreateStockAsync(stockDto);
 
-            //* Check if that stock already exists
-            var existingStock = await _context.Stocks.FirstOrDefaultAsync(s => s.Symbol == stockDto.Symbol);
             if (existingStock != null)
             {
                 return Conflict(new { message = "Stock already exists" });
             }
-
-            _context.Add(stockDto);
-            await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetStockById), new { id = stockDto.Id }, stockDto.ToStockDto());
 
@@ -68,20 +62,12 @@ namespace backend.controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateStock(int id, [FromBody] UpdateStockRequestDto request)
         {
-            var stock = await _context.Stocks.FindAsync(id);
+            var stock = await _stockRepository.UpdateStockAsync(id, request);
+
             if (stock == null)
             {
                 return NotFound();
             }
-            stock.Symbol = request.Symbol;
-            stock.CompanyName = request.CompanyName;
-            stock.Purchase = request.Purchase;
-            stock.LastDividend = request.LastDividend;
-            stock.Industry = request.Industry;
-            stock.MarketCap = request.MarketCap;
-            stock.CreatedAt = request.CreatedAt;
-
-            _context.SaveChanges();
 
             return Ok(stock.ToStockDto());
         }
@@ -89,16 +75,11 @@ namespace backend.controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStock([FromRoute] int id)
         {
-            var stock = await _context.Stocks.Include(s => s.Comments).FirstOrDefaultAsync(s => s.Id == id);
+            var stock = await _stockRepository.DeleteStockAsync(id);
             if (stock == null)
             {
                 return NotFound();
             }
-
-            _context.Comments.RemoveRange(stock.Comments);
-
-            _context.Stocks.Remove(stock);
-            await _context.SaveChangesAsync();
 
             return Accepted(new { message = "Stock deleted successfully", Id = id });
         }
