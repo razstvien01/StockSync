@@ -17,7 +17,7 @@ namespace backend.controllers
     public class StockController : ControllerBase
     {
         private readonly IStockRepository _stockRepository;
-        public StockController(AppDBContext context, IStockRepository stockRepository)
+        public StockController(IStockRepository stockRepository)
         {
             _stockRepository = stockRepository;
         }

@@ -33,7 +33,7 @@ namespace backend.repositories
 
             await _context.AddAsync(stockDto);
             await _context.SaveChangesAsync();
-            return stockDto;
+            return null;
         }
 
         public async Task<Stock?> DeleteStockAsync(int id)
