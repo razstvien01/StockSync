@@ -24,8 +24,10 @@ builder.Services.AddDbContext<AppDBContext>(options =>
     options.UseNpgsql(connectionSring);
 });
 builder.Services.AddControllers();
+
 // * In order to DI works
 builder.Services.AddScoped<IStockRepository, StockRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 var app = builder.Build();
 
