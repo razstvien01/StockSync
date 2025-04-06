@@ -29,7 +29,7 @@ namespace backend.controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetStocksById([FromRoute] int id)
+        public async Task<IActionResult> GetCommentsById([FromRoute] int id)
         {
             var comment = await _commentRepository.FindCommentAsync(id);
 
@@ -50,13 +50,13 @@ namespace backend.controllers
 
             await _commentRepository.CreateCommentAsync(commentDto);
 
-            return CreatedAtAction(nameof(GetStocksById), new { id = commentDto.Id }, commentDto.ToCommentDto());
+            return CreatedAtAction(nameof(GetCommentsById), new { id = commentDto.Id }, commentDto.ToCommentDto());
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateComment([FromRoute] int id, [FromBody] UpdateCommentRequestDto request)
         {
-            var comment = await _commentRepository.FindCommentAsync(id);
+            var comment = await _commentRepository.UpdateCommentAsync(id, request);
 
             if (comment == null)
             {
