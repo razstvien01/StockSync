@@ -23,7 +23,7 @@ namespace backend.repositories
         public async Task<Stock?> CreateStockAsync(Stock stockDto)
         {
             string symbol = stockDto.Symbol;
-            
+
             var existingStock = await _context.Stocks.FirstOrDefaultAsync(s => s.Symbol == symbol);
 
             if (existingStock != null)
@@ -64,18 +64,37 @@ namespace backend.repositories
             return stock;
         }
 
+        public async Task<Stock?> FindStockWithCommentsAsync(int id)
+        {
+            var stock = await _context.Stocks.Include(s => s.Comments)
+                .FirstOrDefaultAsync(s => s.Id == id);
+                
+            if(stock == null)
+            {
+                return null;
+            }
+            
+            return stock;
+        }
+
         public async Task<List<Stock>> GetAllStocksAsync()
         {
             return await _context.Stocks.ToListAsync();
         }
 
+        public async Task<List<Stock>> GetAllStocksWithCommentsAsync()
+        {
+            return await _context.Stocks.Include(s => s.Comments).ToListAsync();
+        }
+
         public async Task<Stock?> UpdateStockAsync(int id, UpdateStockRequestDto request)
         {
             var stock = await _context.Stocks.FindAsync(id);
-            if(stock == null){
+            if (stock == null)
+            {
                 return null;
             }
-            
+
             stock.Symbol = request.Symbol;
             stock.CompanyName = request.CompanyName;
             stock.Purchase = request.Purchase;
@@ -83,9 +102,9 @@ namespace backend.repositories
             stock.Industry = request.Industry;
             stock.MarketCap = request.MarketCap;
             stock.CreatedAt = request.CreatedAt;
-            
+
             await _context.SaveChangesAsync();
-            
+
             return stock;
         }
     }

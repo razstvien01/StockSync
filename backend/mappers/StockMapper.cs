@@ -20,7 +20,8 @@ namespace backend.mappers
                 LastDividend = dto.LastDividend,
                 Industry = dto.Industry,
                 MarketCap = dto.MarketCap,
-                CreatedAt = dto.CreatedAt
+                CreatedAt = dto.CreatedAt,
+                Comments = dto.Comments.Select(c => c.ToCommentDto()).ToList()
             };
         }
         

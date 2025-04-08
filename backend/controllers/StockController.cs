@@ -30,6 +30,15 @@ namespace backend.controllers
 
             return Ok(stockDto);
         }
+        
+        [HttpGet("stockwc")]
+        public async Task<IActionResult> GrtAllStocksWithComments()
+        {
+            var stocks = await _stockRepository.GetAllStocksWithCommentsAsync();
+            var stockDto = stocks.Select(s => s.ToStockDto());
+            
+            return Ok(stockDto);
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetStockById([FromRoute] int id)
@@ -42,6 +51,21 @@ namespace backend.controllers
 
             var stockDto = stock.ToStockDto();
 
+            return Ok(stockDto);
+        }
+        
+        [HttpGet("stockwc/{id}")]
+        public async Task<IActionResult> GetStockWithCommentsById([FromRoute] int id)
+        {
+            var stock = await _stockRepository.FindStockWithCommentsAsync(id);
+            
+            if(stock == null)
+            {
+                return NotFound();
+            }
+            
+            var stockDto = stock.ToStockDto();
+            
             return Ok(stockDto);
         }
 
