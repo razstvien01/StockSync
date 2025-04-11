@@ -94,7 +94,7 @@ namespace backend.repositories
 
         public async Task<Stock?> UpdateStockAsync(int id, UpdateStockRequestDto request)
         {
-            var stock = await _context.Stocks.FindAsync(id)
+            var stock = await _context.Stocks.FindAsync(id);
             if (stock == null)
             {
                 return null;

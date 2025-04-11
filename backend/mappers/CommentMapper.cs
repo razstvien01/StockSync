@@ -21,12 +21,11 @@ namespace backend.mappers
             };
         }
         
-        public static Comment ToCommentFromCreateDto(this CreateCommentRequestDto dto){
+        public static Comment ToCommentFromCreateDto(this CreateCommentRequestDto dto, int stockId){
             return new Comment{
                 Title = dto.Title,
                 Content = dto.Content,
-                CreatedAt = dto.CreatedAt,
-                StockId = dto.StockId
+                StockId = stockId
             };
         }
     }
