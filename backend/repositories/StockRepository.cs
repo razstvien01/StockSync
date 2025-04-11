@@ -68,12 +68,12 @@ namespace backend.repositories
         {
             var stock = await _context.Stocks.Include(s => s.Comments)
                 .FirstOrDefaultAsync(s => s.Id == id);
-                
-            if(stock == null)
+
+            if (stock == null)
             {
                 return null;
             }
-            
+
             return stock;
         }
 
@@ -87,9 +87,14 @@ namespace backend.repositories
             return await _context.Stocks.Include(s => s.Comments).ToListAsync();
         }
 
+        public async  Task<bool> StockExistsAsync(int id)
+        {
+            return await _context.Stocks.AnyAsync(s => s.Id == id);
+        }
+
         public async Task<Stock?> UpdateStockAsync(int id, UpdateStockRequestDto request)
         {
-            var stock = await _context.Stocks.FindAsync(id);
+            var stock = await _context.Stocks.FindAsync(id)
             if (stock == null)
             {
                 return null;
