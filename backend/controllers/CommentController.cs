@@ -14,9 +14,11 @@ namespace backend.controllers
     public class CommentController : ControllerBase
     {
         private readonly ICommentRepository _commentRepository;
-        public CommentController(ICommentRepository commentRepository)
+        private readonly IStockRepository _stockRepository;
+        public CommentController(ICommentRepository commentRepository, IStockRepository stockRepository)
         {
             _commentRepository = commentRepository;
+            _stockRepository = stockRepository;
         }
 
         [HttpGet]
@@ -43,10 +45,15 @@ namespace backend.controllers
             return Ok(commentDto);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateComment([FromBody] CreateCommentRequestDto request)
+        [HttpPost("{stockId}")]
+        public async Task<IActionResult> CreateComment([FromRoute] int stockId, [FromBody] CreateCommentRequestDto request)
         {
-            var commentDto = request.ToCommentFromCreateDto();
+            if(!await _stockRepository.StockExistsAsync(stockId))
+            {
+                return BadRequest("Stock not found");
+            }
+            
+            var commentDto = request.ToCommentFromCreateDto(stockId);
 
             await _commentRepository.CreateCommentAsync(commentDto);
 
