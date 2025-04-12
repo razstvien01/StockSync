@@ -28,5 +28,12 @@ namespace backend.mappers
                 StockId = stockId
             };
         }
+        
+        public static Comment ToCommentFromUpdateDto(this UpdateCommentRequestDto dto){
+            return new Comment{
+                Title = dto.Title,
+                Content = dto.Content
+            };
+        }
     }
 }

@@ -57,7 +57,7 @@ namespace backend.repositories
             return await _context.Comments.ToListAsync();
         }
 
-        public async Task<Comment?> UpdateCommentAsync(int id, UpdateCommentRequestDto request)
+        public async Task<Comment?> UpdateCommentAsync(int id, Comment request)
         {
             var comment = await _context.Comments.FindAsync(id);
             
@@ -68,8 +68,6 @@ namespace backend.repositories
             
             comment.Title = request.Title;
             comment.Content = request.Content;
-            comment.CreatedAt = request.CreatedAt;
-            comment.StockId = request.StockId;
             
             await _context.SaveChangesAsync();
             

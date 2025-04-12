@@ -12,7 +12,7 @@ namespace backend.interfaces
         Task<List<Comment>> GetAllCommentsAsync();
         Task<Comment?> FindCommentAsync(int id);
         Task<Comment?> CreateCommentAsync(Comment commentDto);
-        Task<Comment?> UpdateCommentAsync(int id, UpdateCommentRequestDto request);
+        Task<Comment?> UpdateCommentAsync(int id, Comment request);
         Task<Comment?> DeleteCommentAsync(int id);
     }
 }

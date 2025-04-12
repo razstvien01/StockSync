@@ -63,7 +63,7 @@ namespace backend.controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateComment([FromRoute] int id, [FromBody] UpdateCommentRequestDto request)
         {
-            var comment = await _commentRepository.UpdateCommentAsync(id, request);
+            var comment = await _commentRepository.UpdateCommentAsync(id, request.ToCommentFromUpdateDto());
 
             if (comment == null)
             {
