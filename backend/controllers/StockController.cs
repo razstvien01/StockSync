@@ -42,7 +42,7 @@ namespace backend.controllers
             }
             
             var stocks = await _stockRepository.GetAllStocksWithCommentsAsync();
-            var stockDto = stocks.Select(s => s.ToStockDto());
+            var stockDto = stocks.Select(s => s.ToStockWCDto());
             
             return Ok(stockDto);
         }
@@ -81,7 +81,7 @@ namespace backend.controllers
                 return NotFound();
             }
             
-            var stockDto = stock.ToStockDto();
+            var stockDto = stock.ToStockWCDto();
             
             return Ok(stockDto);
         }

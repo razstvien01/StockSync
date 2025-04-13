@@ -21,6 +21,21 @@ namespace backend.mappers
                 Industry = dto.Industry,
                 MarketCap = dto.MarketCap,
                 CreatedAt = dto.CreatedAt,
+            };
+        }
+        
+        public static StockWCDto ToStockWCDto(this Stock dto)
+        {
+            return new StockWCDto
+            {
+                Id = dto.Id,
+                Symbol = dto.Symbol,
+                CompanyName = dto.CompanyName,
+                Purchase = dto.Purchase,
+                LastDividend = dto.LastDividend,
+                Industry = dto.Industry,
+                MarketCap = dto.MarketCap,
+                CreatedAt = dto.CreatedAt,
                 Comments = dto.Comments.Select(c => c.ToCommentDto()).ToList()
             };
         }

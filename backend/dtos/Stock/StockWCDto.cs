@@ -6,7 +6,7 @@ using backend.dtos.Comment;
 
 namespace backend.dtos.Stock
 {
-    public class StockDto
+    public class StockWCDto
     {
         public int Id { get; set; }
         public string Symbol { get; set; } = string.Empty;
@@ -16,5 +16,6 @@ namespace backend.dtos.Stock
         public string Industry { get; set; } = string.Empty;
         public long MarketCap { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public List<CommentDto> Comments { get; set; } = new List<CommentDto>();
     }
 }
