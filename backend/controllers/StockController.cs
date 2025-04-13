@@ -40,7 +40,7 @@ namespace backend.controllers
             return Ok(stockDto);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetStockById([FromRoute] int id)
         {
             var stock = await _stockRepository.FindStockAsync(id);
@@ -54,7 +54,7 @@ namespace backend.controllers
             return Ok(stockDto);
         }
         
-        [HttpGet("stockwc/{id}")]
+        [HttpGet("stockwc/{id:int}")]
         public async Task<IActionResult> GetStockWithCommentsById([FromRoute] int id)
         {
             var stock = await _stockRepository.FindStockWithCommentsAsync(id);
@@ -83,7 +83,7 @@ namespace backend.controllers
             return CreatedAtAction(nameof(GetStockById), new { id = stockDto.Id }, stockDto.ToStockDto());
 
         }
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateStock(int id, [FromBody] UpdateStockRequestDto request)
         {
             var stock = await _stockRepository.UpdateStockAsync(id, request);
@@ -96,7 +96,7 @@ namespace backend.controllers
             return Ok(stock.ToStockDto());
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteStock([FromRoute] int id)
         {
             var stock = await _stockRepository.DeleteStockAsync(id);
