@@ -6,10 +6,7 @@ using backend.data;
 using backend.dtos.Stock;
 using backend.interfaces;
 using backend.mappers;
-using backend.models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
 namespace backend.controllers
 {
     [Route("api/stock")]
@@ -25,6 +22,11 @@ namespace backend.controllers
         [HttpGet]
         public async Task<IActionResult> GetAllStocks()
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var stocks = await _stockRepository.GetAllStocksAsync();
             var stockDto = stocks.Select(s => s.ToStockDto());
 
@@ -34,6 +36,11 @@ namespace backend.controllers
         [HttpGet("stockwc")]
         public async Task<IActionResult> GrtAllStocksWithComments()
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var stocks = await _stockRepository.GetAllStocksWithCommentsAsync();
             var stockDto = stocks.Select(s => s.ToStockDto());
             
@@ -43,6 +50,11 @@ namespace backend.controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetStockById([FromRoute] int id)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var stock = await _stockRepository.FindStockAsync(id);
             if (stock == null)
             {
@@ -57,6 +69,11 @@ namespace backend.controllers
         [HttpGet("stockwc/{id:int}")]
         public async Task<IActionResult> GetStockWithCommentsById([FromRoute] int id)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var stock = await _stockRepository.FindStockWithCommentsAsync(id);
             
             if(stock == null)
@@ -72,6 +89,11 @@ namespace backend.controllers
         [HttpPost]
         public async Task<IActionResult> CreateStock([FromBody] CreateStockRequestDto request)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var stockDto = request.ToStockFromCreateDto();
             var existingStock = await _stockRepository.CreateStockAsync(stockDto);
 
@@ -86,6 +108,11 @@ namespace backend.controllers
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateStock(int id, [FromBody] UpdateStockRequestDto request)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var stock = await _stockRepository.UpdateStockAsync(id, request);
 
             if (stock == null)
@@ -99,6 +126,11 @@ namespace backend.controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteStock([FromRoute] int id)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var stock = await _stockRepository.DeleteStockAsync(id);
             if (stock == null)
             {
