@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using backend.data;
 using backend.dtos.Stock;
+using backend.helpers;
 using backend.interfaces;
 using backend.mappers;
 using backend.models;
@@ -77,9 +78,21 @@ namespace backend.repositories
             return stock;
         }
 
-        public async Task<List<Stock>> GetAllStocksAsync()
+        public async Task<List<Stock>> GetAllStocksAsync(QueryObjects query)
         {
-            return await _context.Stocks.ToListAsync();
+            var stocks = _context.Stocks.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.CompanyName))
+            {
+                stocks = stocks.Where(s => s.CompanyName.Contains(query.CompanyName));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Symbol))
+            {
+                stocks = stocks.Where(s => s.Symbol.Contains(query.Symbol));
+            }
+
+            return await stocks.ToListAsync();
         }
 
         public async Task<List<Stock>> GetAllStocksWithCommentsAsync()
@@ -87,7 +100,7 @@ namespace backend.repositories
             return await _context.Stocks.Include(s => s.Comments).ToListAsync();
         }
 
-        public async  Task<bool> StockExistsAsync(int id)
+        public async Task<bool> StockExistsAsync(int id)
         {
             return await _context.Stocks.AnyAsync(s => s.Id == id);
         }
