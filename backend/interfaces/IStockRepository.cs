@@ -11,7 +11,7 @@ namespace backend.interfaces
     public interface IStockRepository
     {
         Task<List<Stock>> GetAllStocksAsync(QueryObjects query);
-        Task<List<Stock>> GetAllStocksWithCommentsAsync();
+        Task<List<Stock>> GetAllStocksWithCommentsAsync(QueryObjects query);
         Task<Stock?> FindStockAsync(int id);
         Task<Stock?> FindStockWithCommentsAsync(int id);
         Task<Stock?> CreateStockAsync(Stock stockDto);

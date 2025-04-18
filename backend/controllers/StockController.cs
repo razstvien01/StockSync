@@ -35,14 +35,14 @@ namespace backend.controllers
         }
 
         [HttpGet("stockwc")]
-        public async Task<IActionResult> GrtAllStocksWithComments()
+        public async Task<IActionResult> GrtAllStocksWithComments([FromQuery] QueryObjects query)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var stocks = await _stockRepository.GetAllStocksWithCommentsAsync();
+            var stocks = await _stockRepository.GetAllStocksWithCommentsAsync(query);
             var stockDto = stocks.Select(s => s.ToStockWCDto());
 
             return Ok(stockDto);
