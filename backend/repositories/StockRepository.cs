@@ -97,12 +97,13 @@ namespace backend.repositories
                 stocks = query.IsDescending ? stocks.OrderByDescending(s => s.Symbol) : stocks.OrderBy(s => s.Symbol);
             }
 
-            return await stocks.ToListAsync();
+            int skipNumber = (query.PageNumber - 1) * query.PageSize;
+
+            return await stocks.Skip(skipNumber).Take(query.PageSize).ToListAsync();
         }
 
         public async Task<List<Stock>> GetAllStocksWithCommentsAsync(QueryObjects query)
         {
-            // return await _context.Stocks.Include(s => s.Comments).ToListAsync();
             var stocks = _context.Stocks.Include(s => s.Comments).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query.CompanyName))
@@ -121,7 +122,9 @@ namespace backend.repositories
                 stocks = query.IsDescending ? stocks.OrderByDescending(s => s.Symbol) : stocks.OrderBy(s => s.Symbol);
             }
 
-            return await stocks.ToListAsync();
+            int skipNumber = (query.PageNumber - 1) * query.PageSize;
+
+            return await stocks.Skip(skipNumber).Take(query.PageSize).ToListAsync();
         }
 
         public async Task<bool> StockExistsAsync(int id)
