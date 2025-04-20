@@ -1,8 +1,12 @@
 using backend.data;
 using backend.interfaces;
+using backend.models;
 using backend.repositories;
 using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 Env.Load();
 
@@ -14,6 +18,9 @@ var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "";
 var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "";
 var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "";
 var connectionSring = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
+var issuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "";
+var audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "";
+var signingKey = Environment.GetEnvironmentVariable("JWT_SIGNING_KEY") ?? "";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +41,40 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 });
 
+builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 12;
+})
+.AddEntityFrameworkStores<AppDBContext>();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme =
+    options.DefaultChallengeScheme =
+    options.DefaultForbidScheme =
+    options.DefaultScheme =
+    options.DefaultSignInScheme =
+    options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration[issuer],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration[audience],
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration[signingKey] ?? throw new InvalidOperationException("JWT SigningKey is not configured."))
+        )
+    };
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -42,6 +83,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
