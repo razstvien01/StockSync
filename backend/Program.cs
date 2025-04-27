@@ -41,6 +41,12 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 });
 
+if (string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience) || string.IsNullOrEmpty(signingKey))
+{
+    throw new InvalidOperationException("JWT configuration missing in environment variables.");
+}
+
+
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -65,12 +71,12 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = builder.Configuration[issuer],
+        ValidIssuer = issuer,
         ValidateAudience = true,
         ValidAudience = builder.Configuration[audience],
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration[signingKey] ?? throw new InvalidOperationException("JWT SigningKey is not configured."))
+            System.Text.Encoding.UTF8.GetBytes(signingKey ?? throw new InvalidOperationException("JWT SigningKey is not configured."))
         )
     };
 });
