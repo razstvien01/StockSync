@@ -7,6 +7,7 @@ using backend.interfaces;
 using backend.models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.controllers
 {
@@ -15,11 +16,44 @@ namespace backend.controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenService _tokenService;
-        public AccountController(UserManager<AppUser> userManager, ITokenService tokenService)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
             _tokenService = tokenService;
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == dto.Username);
+
+                if (user == null)
+                    return NotFound("User not found.");
+
+                var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
+
+                if (!result.Succeeded)
+                    return Unauthorized("Invalid password.");
+
+                return Ok(new NewUserDto
+                {
+                    Username = user.UserName!,
+                    Email = user.Email!,
+                    Token = _tokenService.CreateToken(user)
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpPost("register")]
