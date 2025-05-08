@@ -9,7 +9,7 @@ namespace backend.models
     [Table("Portfolio")]
     public class Portfolio
     {
-        public required int AppUserId { get; set; }
+        public required string AppUserId { get; set; }
         public int StockId { get; set; }
         public required AppUser AppUser { get; set; }
         public required Stock Stock { get; set; }
