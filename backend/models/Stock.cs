@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace backend.models
 {
+    [Table("Stocks")]
     public class Stock
     {
         public int Id { get; set; }
