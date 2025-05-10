@@ -14,7 +14,7 @@ namespace backend.dtos.Stock
         public string Symbol { get; set; } = string.Empty;
         [Required]
         [MinLength(1, ErrorMessage = "Company name must be at least 1 character long.")]
-        [MaxLength(15, ErrorMessage = "Company name must be at most 15 characters long.")]
+        [MaxLength(50, ErrorMessage = "Company name must be at most 50 characters long.")]
         public string CompanyName { get; set; } = string.Empty;
         [Required]
         [Range(1, 1000000000, ErrorMessage = "Price must be between 1 and 1,000,000,000.")]
