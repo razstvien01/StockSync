@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.extensions;
 using backend.interfaces;
 using backend.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +25,16 @@ namespace backend.controllers
             _userManager = userManager;
             _stockRepository = stockRepository;
             _portfolioRepository = portfolioRepository;
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetUserPortfolio()
+        {
+            var username = User.GetUserName();
+            var appUser = await _userManager.FindByNameAsync(username!);
+            var userPortfolio = await _portfolioRepository.GetUserPortfolio(appUser!);
+            return Ok(userPortfolio);
         }
     }
 }
