@@ -8,6 +8,6 @@ namespace backend.interfaces
 {
     public interface IPortfolioRepository
     {
-        Task<List<Portfolio>> GetUserPortfolio(AppUser user);
+        Task<List<Stock>> GetUserPortfolio(AppUser user);
     }
 }
