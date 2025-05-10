@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace backend.models
 {
-    [Table("Portfolio")]
+    [Table("Portfolios")]
     public class Portfolio
     {
         public required string AppUserId { get; set; }
