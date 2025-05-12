@@ -18,5 +18,6 @@ namespace backend.interfaces
         Task<Stock?> UpdateStockAsync(int id, UpdateStockRequestDto request);
         Task<Stock?> DeleteStockAsync(int id);
         Task<bool> StockExistsAsync(int id);
+        Task<Stock?> GetBySymbolAsync(string symbol);
     }
 }
