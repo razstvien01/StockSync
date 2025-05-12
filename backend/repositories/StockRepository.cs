@@ -127,6 +127,12 @@ namespace backend.repositories
             return await stocks.Skip(skipNumber).Take(query.PageSize).ToListAsync();
         }
 
+        public async Task<Stock?> GetBySymbolAsync(string symbol)
+        {
+            return await _context.Stocks
+                .FirstOrDefaultAsync(s => s.Symbol.ToLower() == symbol.ToLower());
+        }
+
         public async Task<bool> StockExistsAsync(int id)
         {
             return await _context.Stocks.AnyAsync(s => s.Id == id);
