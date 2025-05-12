@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.dtos.Portfolio;
 using backend.extensions;
 using backend.interfaces;
 using backend.models;
@@ -35,6 +36,39 @@ namespace backend.controllers
             var appUser = await _userManager.FindByNameAsync(username!);
             var userPortfolio = await _portfolioRepository.GetUserPortfolio(appUser!);
             return Ok(userPortfolio);
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddPortfolio([FromBody] CreatePortfolioRequestDto requestDto)
+        {
+            var symbol = requestDto.Symbol;
+            var username = User.GetUserName();
+            
+            if(string.IsNullOrWhiteSpace(username))
+                return BadRequest("Username is required");
+                
+            var appUser = await _userManager.FindByNameAsync(username);
+            var stock = await _stockRepository.GetBySymbolAsync(symbol);
+            
+            if(stock == null)
+                return NotFound("Stock not found");
+            
+            if(appUser == null)
+                return NotFound("User not found");
+                
+            var userPortfolio = await _portfolioRepository.GetUserPortfolio(appUser);
+            
+            if(userPortfolio.ToList().Any(e => e.Symbol.Equals(symbol, StringComparison.OrdinalIgnoreCase)))
+                return BadRequest("Stock already exists in the portfolio");
+                
+            Portfolio portfolioModel = new Portfolio{
+                AppUserId = appUser.Id,
+                StockId = stock.Id
+            };
+            
+            await _portfolioRepository.CreateAsync(portfolioModel);
+            
+            return Created();
         }
     }
 }
