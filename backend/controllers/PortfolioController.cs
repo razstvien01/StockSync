@@ -43,32 +43,58 @@ namespace backend.controllers
         {
             var symbol = requestDto.Symbol;
             var username = User.GetUserName();
-            
-            if(string.IsNullOrWhiteSpace(username))
+
+            if (string.IsNullOrWhiteSpace(username))
                 return BadRequest("Username is required");
-                
+
             var appUser = await _userManager.FindByNameAsync(username);
             var stock = await _stockRepository.GetBySymbolAsync(symbol);
-            
-            if(stock == null)
+
+            if (stock == null)
                 return NotFound("Stock not found");
-            
-            if(appUser == null)
+
+            if (appUser == null)
                 return NotFound("User not found");
-                
+
             var userPortfolio = await _portfolioRepository.GetUserPortfolio(appUser);
-            
-            if(userPortfolio.ToList().Any(e => e.Symbol.Equals(symbol, StringComparison.OrdinalIgnoreCase)))
+
+            if (userPortfolio.ToList().Any(e => e.Symbol.Equals(symbol, StringComparison.OrdinalIgnoreCase)))
                 return BadRequest("Stock already exists in the portfolio");
-                
-            Portfolio portfolioModel = new Portfolio{
+
+            Portfolio portfolioModel = new Portfolio
+            {
                 AppUserId = appUser.Id,
                 StockId = stock.Id
             };
-            
+
             await _portfolioRepository.CreateAsync(portfolioModel);
-            
+
             return Created();
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeletePortfolio(string symbol)
+        {
+            var username = User.GetUserName();
+
+            if (username == null)
+                return NotFound("Username is missing");
+
+            var appUser = await _userManager.FindByNameAsync(username);
+
+            if (appUser == null)
+                return NotFound("User not found");
+
+            var userPortfolio = await _portfolioRepository.GetUserPortfolio(appUser);
+            var filteredStock = userPortfolio.Where(s => s.Symbol.ToLower() == symbol.ToLower()).ToList();
+
+            if (filteredStock.Count != 1)
+            {
+                return BadRequest("Stock is not on your portfolio");
+            }
+            await _portfolioRepository.DeletePortfolio(appUser, symbol);
+            return Accepted(new { message = "Portfolio deleted successfully", symbol = symbol });
         }
     }
 }
