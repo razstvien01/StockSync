@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using backend.dtos.Comment;
 using backend.interfaces;
 using backend.mappers;
+using backend.models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.controllers
@@ -15,20 +17,22 @@ namespace backend.controllers
     {
         private readonly ICommentRepository _commentRepository;
         private readonly IStockRepository _stockRepository;
-        public CommentController(ICommentRepository commentRepository, IStockRepository stockRepository)
+        private readonly UserManager<AppUser> _userManager;
+        public CommentController(ICommentRepository commentRepository, IStockRepository stockRepository, UserManager<AppUser> userManager)
         {
             _commentRepository = commentRepository;
             _stockRepository = stockRepository;
+            _userManager = userManager; 
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllComments()
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
+
             var comments = await _commentRepository.GetAllCommentsAsync();
             var commentDto = comments.Select(c => c.ToCommentDto());
 
@@ -38,11 +42,11 @@ namespace backend.controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetCommentsById([FromRoute] int id)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
+
             var comment = await _commentRepository.FindCommentAsync(id);
 
             if (comment == null)
@@ -58,16 +62,18 @@ namespace backend.controllers
         [HttpPost("{stockId:int}")]
         public async Task<IActionResult> CreateComment([FromRoute] int stockId, [FromBody] CreateCommentRequestDto request)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
-            if(!await _stockRepository.StockExistsAsync(stockId))
+
+            if (!await _stockRepository.StockExistsAsync(stockId))
             {
                 return BadRequest("Stock not found");
             }
-            
+
+            var username = User.Identity?.Name;
+
             var commentDto = request.ToCommentFromCreateDto(stockId);
 
             await _commentRepository.CreateCommentAsync(commentDto);
@@ -78,11 +84,11 @@ namespace backend.controllers
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateComment([FromRoute] int id, [FromBody] UpdateCommentRequestDto request)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
+
             var comment = await _commentRepository.UpdateCommentAsync(id, request.ToCommentFromUpdateDto());
 
             if (comment == null)
@@ -96,11 +102,11 @@ namespace backend.controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteComment([FromRoute] int id)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
+
             var comment = await _commentRepository.DeleteCommentAsync(id);
 
             if (comment == null)
