@@ -72,7 +72,7 @@ namespace backend.controllers
                 return BadRequest("Stock not found");
             }
 
-            var username = User.Identity?.Name;
+            var username = User.Identity?.Name; 
 
             var commentDto = request.ToCommentFromCreateDto(stockId);
 
