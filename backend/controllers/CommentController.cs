@@ -6,8 +6,10 @@ using backend.dtos.Comment;
 using backend.interfaces;
 using backend.mappers;
 using backend.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using backend.extensions;
 
 namespace backend.controllers
 {
@@ -22,7 +24,7 @@ namespace backend.controllers
         {
             _commentRepository = commentRepository;
             _stockRepository = stockRepository;
-            _userManager = userManager; 
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -72,10 +74,20 @@ namespace backend.controllers
                 return BadRequest("Stock not found");
             }
 
-            var username = User.Identity?.Name; 
+            var username = User.GetUserName();
+            
+            Console.WriteLine("Username: " + username);
+            
+            if (string.IsNullOrWhiteSpace(username))
+                return NotFound("Username not found");
+
+            var appUser = await _userManager.FindByNameAsync(username);
+
+            if (appUser == null)
+                return NotFound("App User not found");
 
             var commentDto = request.ToCommentFromCreateDto(stockId);
-
+            commentDto.AppUserId = appUser.Id;
             await _commentRepository.CreateCommentAsync(commentDto);
 
             return CreatedAtAction(nameof(GetCommentsById), new { id = commentDto.Id }, commentDto.ToCommentDto());
