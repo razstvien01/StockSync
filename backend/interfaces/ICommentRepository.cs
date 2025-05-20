@@ -10,6 +10,7 @@ namespace backend.interfaces
     public interface ICommentRepository
     {
         Task<List<Comment>> GetAllCommentsAsync();
+        Task<Comment?> GetByIdAsync(int id);
         Task<Comment?> FindCommentAsync(int id);
         Task<Comment?> CreateCommentAsync(Comment commentDto);
         Task<Comment?> UpdateCommentAsync(int id, Comment request);
