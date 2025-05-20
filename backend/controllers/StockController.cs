@@ -29,7 +29,7 @@ namespace backend.controllers
             }
 
             var stocks = await _stockRepository.GetAllStocksAsync(query);
-            var stockDto = stocks.Select(s => s.ToStockDto());
+            var stockDto = stocks.Select(s => s.ToStockDto()).ToList();
 
             return Ok(stockDto);
         }
