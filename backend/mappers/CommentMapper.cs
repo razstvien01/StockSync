@@ -17,20 +17,25 @@ namespace backend.mappers
                 Title = dto.Title,
                 Content = dto.Content,
                 CreatedAt = dto.CreatedAt,
+                CreatedBy = dto.AppUser!.UserName ?? "",
                 StockId = dto.StockId
             };
         }
-        
-        public static Comment ToCommentFromCreateDto(this CreateCommentRequestDto dto, int stockId){
-            return new Comment{
+
+        public static Comment ToCommentFromCreateDto(this CreateCommentRequestDto dto, int stockId)
+        {
+            return new Comment
+            {
                 Title = dto.Title,
                 Content = dto.Content,
                 StockId = stockId
             };
         }
-        
-        public static Comment ToCommentFromUpdateDto(this UpdateCommentRequestDto dto){
-            return new Comment{
+
+        public static Comment ToCommentFromUpdateDto(this UpdateCommentRequestDto dto)
+        {
+            return new Comment
+            {
                 Title = dto.Title,
                 Content = dto.Content
             };
