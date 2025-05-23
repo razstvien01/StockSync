@@ -76,8 +76,6 @@ namespace backend.controllers
 
             var username = User.GetUserName();
             
-            Console.WriteLine("Username: " + username);
-            
             if (string.IsNullOrWhiteSpace(username))
                 return NotFound("Username not found");
 
